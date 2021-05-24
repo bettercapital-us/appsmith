@@ -5,6 +5,8 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export interface StyledImageProps {
   defaultImageUrl: string;
+  enableRotation?: boolean;
+  imageRotation?: number;
   imageUrl?: string;
   backgroundColor?: string;
   showHoverPointer?: boolean;
@@ -17,7 +19,12 @@ export const StyledImage = styled.div<
   }
 >`
   position: relative;
-  display: flex;                                                                                                                                                                                                                                                                                                                                                                          
+  display: flex;
+  transform: ${(props) =>
+    props.enableRotation && props.imageRotation
+      ? `rotate(${props.imageRotation}deg)`
+      : "rotate(0deg)"};
+
   flex-direction: "row";
   cursor: ${(props) =>
     props.showHoverPointer && props.onClick ? "pointer" : "inherit"};
@@ -178,6 +185,8 @@ export interface ImageComponentProps extends ComponentProps {
   isLoading: boolean;
   showHoverPointer?: boolean;
   maxZoomLevel: number;
+  enableRotation?: boolean;
+  imageRotation?: number;
   disableDrag: (disabled: boolean) => void;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }

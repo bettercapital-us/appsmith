@@ -78,6 +78,27 @@ class ImageWidget extends BaseWidget<ImageWidgetProps, WidgetState> {
             isTriggerProperty: false,
             validation: VALIDATION_TYPES.NUMBER,
           },
+          {
+            helpText: "Controls if image can be rotated or not",
+            propertyName: "enableRotation",
+            label: "Enable Rotation",
+            controlType: "SWITCH",
+            isJSConvertible: false,
+            isBindProperty: true,
+            isTriggerProperty: false,
+            validation: VALIDATION_TYPES.BOOLEAN,
+          },
+          {
+            helpText: "Image rotation in degs",
+            propertyName: "imageRotation",
+            label: "Image Rotation",
+            controlType: "INPUT_TEXT",
+            placeholderText: "Enter rotation amount in Deg",
+            isBindProperty: true,
+            isTriggerProperty: false,
+            validation: VALIDATION_TYPES.TEXT,
+            hidden: (props: ImageWidgetProps) => !props.enableRotation,
+          },
         ],
       },
       {
@@ -106,6 +127,8 @@ class ImageWidget extends BaseWidget<ImageWidgetProps, WidgetState> {
         disableDrag={(disable: boolean) => {
           this.disableDrag(disable);
         }}
+        enableRotation={this.props.enableRotation}
+        imageRotation={this.props.imageRotation}
         imageUrl={this.props.image}
         isLoading={this.props.isLoading}
         maxZoomLevel={maxZoomLevel}
@@ -140,6 +163,8 @@ export interface ImageWidgetProps extends WidgetProps {
   imageShape: ImageShape;
   defaultImage: string;
   maxZoomLevel: number;
+  imageRotation?: number;
+  enableRotation?: boolean;
   onClick?: string;
 }
 
