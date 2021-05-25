@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Icon } from "@blueprintjs/core";
 import { ComponentProps } from "./BaseComponent";
 import styled from "styled-components";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -39,6 +40,7 @@ export const StyledImage = styled.div<
 `;
 
 const Wrapper = styled.div`
+  position: relative;
   height: 100%;
   width: 100%;
   .react-transform-element,
@@ -46,6 +48,27 @@ const Wrapper = styled.div`
     height: 100%;
     width: 100%;
   }
+`;
+
+const RotateBtnWrapper = styled.div`
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+`;
+
+const RotateBtn = styled.div`
+  cursor: pointer;
+  height: 30px;
+  width: 30px;
+  margin: 0px 10px;
+  background: #504f4f47;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 enum ZoomingState {
@@ -56,6 +79,7 @@ class ImageComponent extends React.Component<
   ImageComponentProps,
   {
     imageError: boolean;
+    showRotateBtn: boolean;
     zoomingState: ZoomingState;
   }
 > {
@@ -65,11 +89,13 @@ class ImageComponent extends React.Component<
     this.isPanning = false;
     this.state = {
       imageError: false,
+      showRotateBtn: false,
       zoomingState: ZoomingState.MAX_ZOOMED_OUT,
     };
   }
   render() {
     const { maxZoomLevel } = this.props;
+    const { showRotateBtn } = this.state;
     const zoomActive =
       maxZoomLevel !== undefined && maxZoomLevel > 1 && !this.isPanning;
     const isZoomingIn = this.state.zoomingState === ZoomingState.MAX_ZOOMED_OUT;
@@ -78,7 +104,18 @@ class ImageComponent extends React.Component<
       cursor = isZoomingIn ? "zoom-in" : "zoom-out";
     }
     return (
-      <Wrapper>
+      <Wrapper
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+      >
+        <RotateBtnWrapper>
+          <RotateBtn onClick={this.handleImageRotate(false)}>
+            <Icon color="grey" icon="image-rotate-left" />
+          </RotateBtn>
+          <RotateBtn onClick={this.handleImageRotate(true)}>
+            <Icon color="grey" icon="image-rotate-right" />
+          </RotateBtn>
+        </RotateBtnWrapper>
         <TransformWrapper
           defaultScale={1}
           doubleClick={{
@@ -166,6 +203,20 @@ class ImageComponent extends React.Component<
     );
   }
 
+  handleImageRotate = (rotateRight: boolean) => (e: any) => {
+    this.props.onImageRotate(rotateRight);
+
+    if (!!e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  onMouseEnter = () =>
+    this.setState({ showRotateBtn: !!this.props.enableRotation && true });
+
+  onMouseLeave = () => this.setState({ showRotateBtn: false });
+
   onImageError = () => {
     this.setState({
       imageError: true,
@@ -187,6 +238,7 @@ export interface ImageComponentProps extends ComponentProps {
   maxZoomLevel: number;
   enableRotation?: boolean;
   imageRotation?: number;
+  onImageRotate: (e: any) => void;
   disableDrag: (disabled: boolean) => void;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }

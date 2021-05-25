@@ -6,6 +6,9 @@ import { VALIDATION_TYPES } from "constants/WidgetValidation";
 import * as Sentry from "@sentry/react";
 import { EventType } from "constants/AppsmithActionConstants/ActionConstants";
 
+// rotation step angle in deg
+const IMAGE_ROTATION_STEP_VALUE = 45;
+
 class ImageWidget extends BaseWidget<ImageWidgetProps, WidgetState> {
   constructor(props: ImageWidgetProps) {
     super(props);
@@ -88,17 +91,6 @@ class ImageWidget extends BaseWidget<ImageWidgetProps, WidgetState> {
             isTriggerProperty: false,
             validation: VALIDATION_TYPES.BOOLEAN,
           },
-          {
-            helpText: "Image rotation in degs",
-            propertyName: "imageRotation",
-            label: "Image Rotation",
-            controlType: "INPUT_TEXT",
-            placeholderText: "Enter rotation amount in Deg",
-            isBindProperty: true,
-            isTriggerProperty: false,
-            validation: VALIDATION_TYPES.TEXT,
-            hidden: (props: ImageWidgetProps) => !props.enableRotation,
-          },
         ],
       },
       {
@@ -133,11 +125,24 @@ class ImageWidget extends BaseWidget<ImageWidgetProps, WidgetState> {
         isLoading={this.props.isLoading}
         maxZoomLevel={maxZoomLevel}
         onClick={this.props.onClick ? this.onImageClick : undefined}
+        onImageRotate={this.onRotateClick}
         showHoverPointer={this.props.renderMode === RenderModes.PAGE}
         widgetId={this.props.widgetId}
       />
     );
   }
+
+  onRotateClick = (rotateRight: boolean) => {
+    const currentRotation = !!this.props.imageRotation
+      ? Number(this.props.imageRotation as number)
+      : 0;
+    const nextRotation = rotateRight
+      ? currentRotation + IMAGE_ROTATION_STEP_VALUE
+      : currentRotation - IMAGE_ROTATION_STEP_VALUE;
+    // reset next rotation value if rotating for more than 360 deg
+    // i.e. 405 deg rotation = 45 deg
+    this.updateWidgetProperty("imageRotation", nextRotation % 360);
+  };
 
   onImageClick() {
     if (this.props.onClick) {
