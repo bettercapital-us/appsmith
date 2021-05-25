@@ -108,14 +108,16 @@ class ImageComponent extends React.Component<
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
-        <RotateBtnWrapper>
-          <RotateBtn onClick={this.handleImageRotate(false)}>
-            <Icon color="grey" icon="image-rotate-left" />
-          </RotateBtn>
-          <RotateBtn onClick={this.handleImageRotate(true)}>
-            <Icon color="grey" icon="image-rotate-right" />
-          </RotateBtn>
-        </RotateBtnWrapper>
+        {showRotateBtn && (
+          <RotateBtnWrapper>
+            <RotateBtn onClick={this.handleImageRotate(false)}>
+              <Icon color="grey" icon="image-rotate-left" />
+            </RotateBtn>
+            <RotateBtn onClick={this.handleImageRotate(true)}>
+              <Icon color="grey" icon="image-rotate-right" />
+            </RotateBtn>
+          </RotateBtnWrapper>
+        )}
         <TransformWrapper
           defaultScale={1}
           doubleClick={{
